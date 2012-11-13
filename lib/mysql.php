@@ -4,7 +4,7 @@ class MySQL {
     var $host = "localhost";
     var $username = "root";
     var $password = "";
-    var $database = "chaofeng";
+    var $database = "qiuniu";
 
     public function __construct() {
        $this->handler = mysql_connect($this->host, $this->username, $this->password);
@@ -71,8 +71,10 @@ class MySQL {
     }
 
     public function insert($table, $fields) {
+        var_dump($fields);
         unset($fields["id"]);
-        $sql = sprintf('INSERT INTO %s (%s) VALUES ("%s")', $table, implode(',',array_keys($fields)), implode('","',array_values($fields)));
+        $values = array_map('mysql_real_escape_string', array_values($fields));
+        $sql = sprintf('INSERT INTO %s (%s) VALUES ("%s")', $table, implode(',',array_keys($fields)), implode('","',$values));
         $result = mysql_query($sql);
         if (!$result) {
             die('Invalid query: ' . $sql . " - " . mysql_error());

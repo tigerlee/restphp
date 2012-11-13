@@ -8,6 +8,7 @@ class Request {
 
     public function __construct($params) {
         $this->restful = (isset($params["restful"])) ? $params["restful"] : false;
+        $this->url_prefix = (isset($params["url_prefix"])) ? preg_quote($params["url_prefix"], '/') : '\/';
         $this->method = $_SERVER["REQUEST_METHOD"];
         $this->parseRequest();
     }
@@ -35,10 +36,10 @@ class Request {
             $this->params = $_GET;
          } else {
             // grab JSON data if there...
-            $this->params = (isset($_REQUEST['data'])) ? json_decode(stripslashes($_REQUEST['data'])) : null;
+            $this->params = (isset($_REQUEST['data'])) ? json_decode($_REQUEST['data']) : null;
 
             if (isset($_REQUEST['data'])) {
-                $this->params =  json_decode(stripslashes($_REQUEST['data']));
+                $this->params =  json_decode($_REQUEST['data']);
             } else {
                 $raw  = '';
                 $httpContent = fopen('php://input', 'r');
@@ -46,18 +47,18 @@ class Request {
                     $raw .= $kb;
                 }
                 #syslog(LOG_ERR, ">>>>".$raw);
-                $params = json_decode(stripslashes($raw));
+                $params = json_decode($raw);
                 $this->params = $params->data;
             }
 
         }
         $REQUEST_URI = $_SERVER["REQUEST_URI"];
         if (isset($REQUEST_URI)){
-            $cai = '/^\/([a-z]+\w)\/([a-z]+\w)\/([0-9]+)\??[^\/]*$/';  // /controller/action/id
-            $ca  = '/^\/([a-z]+\w)\/([a-z]+)\??[^\/]*$/';              // /controller/action
-            $ci  = '/^\/([a-z]+\w)\/([0-9]+)\??[^\/]*$/';              // /controller/id
-            $c   = '/^\/([a-z]+\w)\??[^\/]*$/';                        // /controller
-            $i   = '/^\/([0-9]+)\??[^\/]*$/';                          // /id
+            $cai = '/^\/'.$this->url_prefix.'([a-z_]+\w)\/([a-z]+\w)\/([0-9]+)\??[^\/]*$/';  // /controller/action/id
+            $ca  = '/^\/'.$this->url_prefix.'([a-z_]+\w)\/([a-z]+)\??[^\/]*$/';              // /controller/action
+            $ci  = '/^\/'.$this->url_prefix.'([a-z_]+\w)\/([0-9]+)\??[^\/]*$/';              // /controller/id
+            $c   = '/^\/'.$this->url_prefix.'([a-z_]+\w)\??[^\/]*$/';                        // /controller
+            $i   = '/^\/'.$this->url_prefix.'([0-9]+)\??[^\/]*$/';                          // /id
 
             $matches = array();
             if (preg_match($cai, $REQUEST_URI, $matches)) {
