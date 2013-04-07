@@ -13,7 +13,8 @@ class Model {
     static function find($table_, $id) {
         global $dbh;
         $found = null;
-        $rec = Model::all("*", $table_, array("id" => $id))["data"][0];
+        $data = Model::all("*", $table_, array("id" => $id));
+        $rec = $data["data"][0];
         if ($rec['id'] == $id) {
             $found = new self($table_, $rec);
         }
