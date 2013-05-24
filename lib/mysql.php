@@ -4,14 +4,16 @@ class MySQL {
     var $host = "localhost";
     var $username = "root";
     var $password = "";
-    var $database = "qiuniu";
+    var $database = "";
 
     public function __construct() {
        $this->handler = mysql_connect($this->host, $this->username, $this->password);
+       $this->database = $_SERVER['database_name'];
        if (!$this->handler) {
            die('Could not connect: ' . mysql_error());
        }
        mysql_select_db($this->database, $this->handler);
+       mysql_query("set names utf8");
     }
 
     public function __destruct() {
@@ -33,6 +35,7 @@ class MySQL {
        unset($params["dir"]);
        unset($params["_dc"]);
        unset($params["page"]);
+       unset($params["group"]);
        foreach ($params as $key => $value) {
            $value = mysql_real_escape_string($value);
            $cond[] = "$key = '{$value}'";
@@ -71,7 +74,6 @@ class MySQL {
     }
 
     public function insert($table, $fields) {
-        var_dump($fields);
         unset($fields["id"]);
         $values = array_map('mysql_real_escape_string', array_values($fields));
         $sql = sprintf('INSERT INTO %s (%s) VALUES ("%s")', $table, implode(',',array_keys($fields)), implode('","',$values));
