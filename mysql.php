@@ -3,7 +3,7 @@ class MySQL {
     var $handler;
     var $host = "localhost";
     var $username = "root";
-    var $password = "";
+    var $password = "root";
     var $database = "";
 
     public function __construct() {

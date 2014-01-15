@@ -2,7 +2,7 @@
     session_start();
 
     // base framework
-    require(dirname(__FILE__).'/lib/application_controller.php');
+    require(dirname(__FILE__).'/lib/controller.php');
     require(dirname(__FILE__).'/lib/model.php');
     require(dirname(__FILE__).'/lib/request.php');
     require(dirname(__FILE__).'/lib/response.php');

@@ -10,8 +10,8 @@ if (is_null($request->controller)) {
 }
 
 // Get Controller
-$controller_file = 'app/controllers/' . $request->controller . '.php';
-$model_file = 'app/models/' . $request->controller . '.php';
+$controller_file = "${plugin_path}/controllers/" . $request->controller . '.php';
+$model_file = "${plugin_path}/models/" . $request->controller . '.php';
 
 if (file_exists($model_file)) {
     require_once($model_file);
@@ -21,7 +21,7 @@ if (file_exists($controller_file)) {
     $controller_name = ucfirst($request->controller.'Controller');
     $controller = new $controller_name;
 } else {
-    $controller = new ApplicationController();
+    $controller = new ApplicationController($request->controller);
 }
 
 // Dispatch request

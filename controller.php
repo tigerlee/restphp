@@ -3,8 +3,11 @@
  * @class ApplicationController
  */
 class ApplicationController {
-    public $request, $id, $params;
+    public $request, $id, $params, $table;
 
+    public function __construct($controller_name) {
+      $this->table = "${controller_name}s";
+    }
     /**
      * dispatch
      * Dispatch request to appropriate controller-action by convention according to the HTTP method.
@@ -31,9 +34,9 @@ class ApplicationController {
         $res->success = true;
         $res->message = "success";
         if ($this->request->id) {
-            $all = Model::all("*", $this->request->controller, array("id" => $this->request->id));
+            $all = Model::all("*", $this->table, array("id" => $this->request->id));
         } else {
-            $all = Model::all("*", $this->request->controller, $this->params);
+            $all = Model::all("*", $this->table, $this->params);
         }
         $res->total = $all["total"];
         $res->data  = $all["data"];
@@ -45,7 +48,7 @@ class ApplicationController {
      */
     public function create() {
         $res = new Response();
-        $rec = Model::create($this->request->controller, $this->request->params);
+        $rec = Model::create($this->table, $this->request->params);
         if ($rec) {
             $res->success = true;
             $res->message = "Created new {$this->request->controller} {$rec->id}";
@@ -61,7 +64,7 @@ class ApplicationController {
      */
     public function update() {
         $res = new Response();
-        $rec = Model::update($this->request->controller, $this->request->id, $this->request->params);
+        $rec = Model::update($this->table, $this->request->id, $this->request->params);
         if ($rec) {
             $res->data = $rec->to_hash();
             $res->success = true;
@@ -77,7 +80,7 @@ class ApplicationController {
      */
     public function destroy() {
         $res = new Response();
-        if ($rec = Model::destroy($this->request->controller, $this->id)) {
+        if ($rec = Model::destroy($this->table, $this->id)) {
             $res->data = $rec->to_hash();
             $res->success = true;
             $res->message = "Destroyed {$this->request->controller} " . $this->id;
