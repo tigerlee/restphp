@@ -10,7 +10,8 @@ class MySQL {
        $this->handler = mysql_connect($this->host, $this->username, $this->password);
        $this->database = $_SERVER['database_name'];
        if (!$this->handler) {
-           die('Could not connect: ' . mysql_error());
+           //die('Could not connect: ' . mysql_error());
+           die('{"success": false, "message": "' . $this->getErrorMsg() . '"}');
        }
        mysql_select_db($this->database, $this->handler);
        mysql_query("set names utf8");
@@ -48,7 +49,8 @@ class MySQL {
        $sql = "SELECT count(id) FROM " . $table . $cond;
        $result = mysql_query($sql);
        if (!$result) {
-           die('Invalid query: ' . $sql . " - " . mysql_error());
+           //die('Invalid query: ' . $sql . " - " . mysql_error());
+           die('{"success": false, "message": "' . $this->getErrorMsg() . '"}');
        }
        $row = mysql_fetch_row($result);
        $ret["total"] = $row[0];
@@ -59,7 +61,8 @@ class MySQL {
 
            $result = mysql_query($sql);
            if (!$result) {
-               die('Invalid query: ' . $sql . " - " . mysql_error());
+               //die('Invalid query: ' . $sql . " - " . mysql_error());
+               die('{"success": false, "message": "' . $this->getErrorMsg() . '"}');
            }
            $fields_num = mysql_num_fields($result);
            while ($row = mysql_fetch_row($result)) {
@@ -79,7 +82,7 @@ class MySQL {
         $sql = sprintf('INSERT INTO %s (%s) VALUES ("%s")', $table, implode(',',array_keys($fields)), implode('","',$values));
         $result = mysql_query($sql);
         if (!$result) {
-            die('Invalid query: ' . $sql . " - " . mysql_error());
+            die('{"success": false, "message": "' . $this->getErrorMsg() . '"}');
         }
         return mysql_insert_id();
     }
@@ -93,7 +96,7 @@ class MySQL {
         $sql = "UPDATE $table SET $implode WHERE id = '$id'";
         $result = mysql_query($sql);
         if (!$result) {
-            die('Invalid query: ' . $sql . " - " . mysql_error());
+            die('{"success": false, "message": "' . $this->getErrorMsg() . '"}');
         }
     }
 
@@ -101,7 +104,18 @@ class MySQL {
         $sql = "DELETE FROM $table WHERE id = $id";
         $result = mysql_query($sql);
         if (!$result) {
-            die('Invalid query: ' . $sql . " - " . mysql_error());
+            die('{"success": false, "message": "' . $this->getErrorMsg() . '"}');
+        }
+    }
+
+    public function getErrorMsg() {
+        $errno = mysql_errno();
+        switch ($errno) {
+        case 1062:
+            return "该记录已存在！";
+            break;
+        default:
+            return mysql_errno()." ".mysql_error();
         }
     }
 }
