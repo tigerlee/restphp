@@ -2,11 +2,11 @@
     session_start();
 
     // base framework
-    require(dirname(__FILE__).'/lib/controller.php');
-    require(dirname(__FILE__).'/lib/model.php');
-    require(dirname(__FILE__).'/lib/request.php');
-    require(dirname(__FILE__).'/lib/response.php');
-    require(dirname(__FILE__).'/lib/mysql.php');
+    require(dirname(__FILE__).'/controller.php');
+    require(dirname(__FILE__).'/model.php');
+    require(dirname(__FILE__).'/request.php');
+    require(dirname(__FILE__).'/response.php');
+    require(dirname(__FILE__).'/mysql.php');
 
     // Fake a database connection using _SESSION
     $dbh = new MySQL();
