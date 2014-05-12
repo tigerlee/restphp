@@ -1,20 +1,27 @@
 <?php
 class MySQL {
     var $handler;
-    var $host = "localhost";
-    var $username = "root";
-    var $password = "root";
-    var $database = "";
+    var $host;
+    var $username;
+    var $password;
+    var $database;
 
     public function __construct() {
-       $this->handler = mysql_connect($this->host, $this->username, $this->password);
-       $this->database = $_SERVER['database_name'];
-       if (!$this->handler) {
-           //die('Could not connect: ' . mysql_error());
-           die('{"success": false, "message": "' . $this->getErrorMsg() . '"}');
-       }
-       mysql_select_db($this->database, $this->handler);
-       mysql_query("set names utf8");
+      global $mysql_hostname;
+      global $mysql_username;
+      global $mysql_password;
+      global $mysql_database;
+      $this->host     = $mysql_hostname;
+      $this->username = $mysql_username;
+      $this->password = $mysql_password;
+      $this->database = $mysql_database;
+      $this->handler = mysql_connect($this->host, $this->username, $this->password);
+      if (!$this->handler) {
+        //die('Could not connect: ' . mysql_error());
+        die('{"success": false, "message": "' . $this->getErrorMsg() . '"}');
+      }
+      mysql_select_db($this->database, $this->handler);
+      mysql_query("set names utf8");
     }
 
     public function __destruct() {
@@ -68,7 +75,16 @@ class MySQL {
            while ($row = mysql_fetch_row($result)) {
                $record = array();
                for ($i = 0; $i < $fields_num; $i++) {
-                   $record[mysql_field_name($result, $i)] = $row[$i];
+                   $type = mysql_field_type($result, $i);
+                   if ("int" == $type) {
+                       $record[mysql_field_name($result, $i)] = intval($row[$i]);
+                   } else if ("float" == $type) {
+                       $record[mysql_field_name($result, $i)] = floatval($row[$i]);
+                   } else if ("double" == $type) {
+                       $record[mysql_field_name($result, $i)] = doubleval($row[$i]);
+                   } else {
+                       $record[mysql_field_name($result, $i)] = $row[$i];
+                   }
                }
                array_push($ret["data"], $record);
            }

@@ -6,7 +6,8 @@ class ApplicationController {
     public $request, $id, $params, $table;
 
     public function __construct($controller_name) {
-      $this->table = "${controller_name}s";
+      global $table_routes;
+      $this->table = $table_routes[$controller_name] ? : $controller_name;
     }
     /**
      * dispatch
