@@ -31,7 +31,7 @@ if (file_exists($model_file)) {
 if (file_exists($controller_file)) {
     require_once($controller_file);
     $controller_name = ucfirst($request->controller.'Controller');
-    $controller = new $controller_name;
+    $controller = new $controller_name($request->controller);
 } else {
     $controller = new ApplicationController($request->controller);
 }
