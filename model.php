@@ -5,6 +5,13 @@
  */
 class Model {
     public $table_, $id, $attributes;
+
+    public function __construct($table_, $params) {
+        $this->id = isset($params['id']) ? $params['id'] : null;
+        $this->table_ = $table_;
+        $this->attributes = $params;
+    }
+
     static function create($table_, $params) {
         $obj = new self($table_, get_object_vars($params));
         $obj->save();
@@ -48,11 +55,6 @@ class Model {
         return $dbh->rs($fields, $table_, $params);
     }
 
-    public function __construct($table_, $params) {
-        $this->id = isset($params['id']) ? $params['id'] : null;
-        $this->table_ = $table_;
-        $this->attributes = $params;
-    }
     public function save() {
         global $dbh;
         $this->id = $this->attributes['id'] = $dbh->insert($this->table_, $this->attributes);
